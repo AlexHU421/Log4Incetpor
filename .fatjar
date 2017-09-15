@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Tue Aug 29 15:44:30 CST 2017
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=Log2File_fat.jar
+manifest.mergeall=true
+manifest.mainclass=controller.ControllerCollectLog
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=
