@@ -20,7 +20,7 @@ public class RowsFilterRegexLib {
 	private static String TopoRowsRegex = "(Topo\\:)";
 	private static String JobDetailRowsRegex = "(Job \\:.*JobId \\:.*FinalStageId \\:.*All StageId \\:)";
 	private static String StageFinishRowsRegex = "((Stage).*?(runJob).*?(finished in))";
-	private static String JobRunTimeRowsRegex = "(Driver\\.run start)";
+	private static String JobRunTimeRowsRegex = "(method\\=task.MAPRED\\-SPARK.Stage\\-0 start\\=)";
 	private static String SessionEndRowsRegex = "(SessionHandle\\=.*?Restore the configuration ngmr\\.exec\\.mode)";
 	private static String TaksStartDetailRegex = "(Starting task.*in stage .*TID)";
 	private static String TaksEndDetailRegex = "(Finished task.* in stage .* in .* on )";

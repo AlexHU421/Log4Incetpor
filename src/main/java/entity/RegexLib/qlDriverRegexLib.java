@@ -22,6 +22,7 @@ public class qlDriverRegexLib {
 //		System.out.print("LogTime:"+LogTime);
 //		System.out.print(" LogType:"+LogType);
 		if ("JobTime".equals(Key)){
+//			System.out.println(row);
 			sz1 =  row.split("SessionHandle\\=");
 			sz2 =  sz1[1].split("\\)\\] \\- \\<\\/PERFLOG");
 //				System.out.println(" JobRunTimeSessionID:"+sz2[0]);
@@ -35,6 +36,7 @@ public class qlDriverRegexLib {
 				str3 = sz2[1].split(" duration=")[0];
 			session.setSessionEndDetail(LogTime, str1, str2, str3);
 			sessionVector.setSessionrunningTimeVectorByKey(session.getSessionJobFinished());
+//			System.out.println(session.getSessionJobFinished());
 			mr.metaRows2Set("srunning", sessionVector, str1, session.getSessionJobFinished());
 //			System.out.println("Session-SessionEndDetail:"+session.getSessionJobFinished());
 			//记录二次Job完成信息，并根据对应sesion记录JOB发起时间及结束时间，同时判断是否存在Sessionfinished记录进行二次匹配并判断该任务是否为SUCCEEDED状态还是FAILED状态

@@ -11,13 +11,28 @@ public class StageVector {
 	Vector<String> RelTaskStageInfoTempVector = new Vector<String>();
 	Vector<String> StagecheckErrorVector = new Vector<String>();
 	Vector<String> TotalTaskVector = new Vector<String>();
+	Vector<String> StageCheck2sessionVector = new Vector<String>();
 	
+	public Vector<String> getStageCheck2sessionVector() {
+		return StageCheck2sessionVector;
+	}
+
+	public void setStageCheck2sessionVectorByKey(String Key) {
+		StageCheck2sessionVector.add(Key);
+	}
+	
+	public boolean RemoveStageCheck2sessionVectorByKey (String Key){
+		return StageCheck2sessionVector.remove(Key);
+	}
+	
+	
+
 	public Vector<String> getTotalTaskVector() {
 		return TotalTaskVector;
 	}
 
-	public void setTotalTaskVectorByKey(String JobID,String StageID,String TotalTask) {
-		TotalTaskVector.add(JobID+","+StageID+","+TotalTask);
+	public void setTotalTaskVectorByKey(String key) {
+		TotalTaskVector.add(key);
 	}
 	
 	public boolean RemoveTotalTaskVectorByKey (String Key){

@@ -38,7 +38,7 @@ public class LeviathanRegexLib {
 	  private static String TaskDetail2 ="(\\]Statistics TaskTime\\: )";
 	  //TaskDetailRows 3
 	  private static String TaskDetail3 ="(\\]Executors num\\:)";
-	  
+	  private static String  separator = ":this is separator:";
 	  private String[] sz1;
 	  private String[] sz2;
 	  private String str1;
@@ -118,7 +118,7 @@ public class LeviathanRegexLib {
 			str4 = sz2[1].split("TaskCount\\: ")[1].split(" ShufRead: ")[0];
 				task.setTaskRunningDetail(LogTime, str1, str2, str3, str4,str5);
 				taskVector.setTaskInfoTempVectorByKey(task.getTaskRunningDetail());
-				stageVector.setTotalTaskVectorByKey(str2, str3, str4);
+//				stageVector.setTotalTaskVectorByKey(LogTime+separator+str2+separator+str3+separator+str4);
 				mr.metaRows2Set("saveTotal",str2,str3,str4,sessionVector,stageVector);
 //				System.out.println(task.getTaskRunningDetail());
 				//判断获取Task明细行第一行，存入Taskset中（是否需要进行判断为哪个JOB下？的哪个Stage下？的Task进行根据相应内容保存？？）——

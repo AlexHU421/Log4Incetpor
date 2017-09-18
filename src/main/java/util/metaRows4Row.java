@@ -25,7 +25,19 @@ public class metaRows4Row {
 //		this.stageVector=stageVector;
 //		this.taskVector=taskVector;
 //	}
-	
+	public static Long mathRuntime (String stime,String etime){
+		String stemp = "";
+		String etemp = "";
+		stemp+=stime;
+		etemp+=etime;
+		if (stemp.equals("")||etemp.equals("")){
+			return 0L;
+		}else{
+			Long st =  Long.parseLong(stemp);
+			Long et =  Long.parseLong(etemp);
+			return et-st;
+		}
+		}
 	/**
 	 * @param sessionv
 	 * @param setagev
@@ -37,6 +49,8 @@ public class metaRows4Row {
 		String[] sessionsz;
 		String[] stagesz;
 		String[] tasksz;
+		String rt = "";
+		boolean rmCheck = false;
 		/**SessionVector		separator:			:this is separator:
 		 * LogTime    			1504521341571
 		 * SessionID  			bcd61fe4-3d2b-42f3-ada0-add402383782
@@ -123,8 +137,9 @@ public class metaRows4Row {
 		 * 			\: NewLine \::this is error separate rows:
 		 * 			\: NewLine \:
 		 */
-		Vector<String> error = errorv.getEreror4OneErrorTempVector();
-		for(String errorInfo :error){
+		Iterator<String> error = errorv.getEreror4OneErrorTempVector().iterator();
+		while(error.hasNext()){
+			String errorInfo = error.next();
 			//0 EsessionID  1 EStageID  2 ETaskID 3 ENodeName 4 EDetail
 			String[] errorsz = errorInfo.split(separator);
 //			System.out.println("errorInfo"+errorInfo);
@@ -164,42 +179,95 @@ public class metaRows4Row {
 				}
 			stage = setagev.getStagecheckErrorVectorVector().iterator();
 			if (!stageID.equals("")){
+				setagev.setStageCheck2sessionVectorByKey(stageID);
+				error.remove();
 //				System.out.println(stageID);
 			//0 EsessionID  1 EStageID  2 ETaskID 3 ENodeName 4 EDetail
-			while(session.hasNext()){
-				String sessionInfo = session.next();
-				//0 LOGTIME 1 SessionID 2 FinalStageID 3 StageIDs(XXXX XXXX)
-				sessionsz = sessionInfo.split(separator);
-				for (String stid:sessionsz[5].split("\\,")){
-					String[] szs = stid.split("\\(");
-					if (szs.length>1){
-						stid = szs[0];
-					}
+//			while(session.hasNext()){
+//				String sessionInfo = session.next();
+//				//0 LOGTIME 1 SessionID 2 FinalStageID 3 StageIDs(XXXX XXXX)
+//				sessionsz = sessionInfo.split(separator);
+//				for (String stid:sessionsz[5].split("\\,")){
+//					String[] szs = stid.split("\\(");
+//					if (szs.length>1){
+//						stid = szs[0];
+//					}
 //					System.out.println(stid);
-					System.out.println(stageID);
-					System.out.println(stid);
-					System.out.println(stageID.equals(stid));
-					if (stageID.equals(stid)){
-						System.out.println(sessionInfo);
-						//stageInfo + stageStatus +  FailedTaskID
-						sessionInfo+=separator+"Failed"+separator+stageID;
-						String[] szxx = sessionInfo.split(separator);
-						String[] szx = szxx[5].split(";");
-						if (szx.length>1){
-							sessionInfo = szxx[0]+separator+szxx[1]+separator+szxx[2]+separator+szxx[3]+separator+szxx[4]+separator+szx[0]+separator+szx[1]+separator+szxx[6]+separator+szxx[7]+separator+szxx[8]+separator+"Failed"+separator+stageID;;
-						}else{
-							sessionInfo = szxx[0]+separator+szxx[1]+separator+szxx[2]+separator+szxx[3]+separator+szxx[4]+separator+szx[0]+separator+0+separator+szxx[6]+separator+szxx[7]+separator+szxx[8]+separator+"Failed"+separator+stageID;
-						}
-						sessionv.setSessionFinishedVectorByKey(stageInfo);
-						session.remove();
-						stageID = "";
-						sessionInfo="";
-					}
-				}
-			}
-			session = sessionv.getSessionFinishedCheckErrorVector().iterator();
-		}		
+//					System.out.println(stageID);
+//					System.out.println(stid);
+//					System.out.println(stageID.equals(stid));
+//					if (stageID.equals(stid)){
+//						System.out.println(sessionInfo);
+//						//stageInfo + stageStatus +  FailedTaskID
+//						sessionInfo+=separator+"Failed"+separator+stageID;
+//						String[] szxx = sessionInfo.split(separator);
+//						String[] szx = szxx[5].split(";");
+//						if (szx.length>1){
+//							sessionInfo = szxx[0]+separator+szxx[1]+separator+szxx[2]+separator+szxx[3]+separator+szxx[4]+separator+szx[0]+separator+szx[1]+separator+szxx[6]+separator+szxx[7]+separator+szxx[8]+separator+"Failed"+separator+stageID;
+//							System.out.println("错误："+sessionInfo);
+//						}else{
+//							sessionInfo = szxx[0]+separator+szxx[1]+separator+szxx[2]+separator+szxx[3]+separator+szxx[4]+separator+szx[0]+separator+0+separator+szxx[6]+separator+szxx[7]+separator+szxx[8]+separator+"Failed"+separator+stageID;
+//							System.out.println("错误："+sessionInfo);
+//						}
+//						sessionv.setSessionFinishedVectorByKey(stageInfo);
+//						session.remove();
+//						stageID = "";
+//						sessionInfo="";
+//					}
+//				}
+//			}
+//			session = sessionv.getSessionFinishedCheckErrorVector().iterator();
+		}
+			
 	}
+		session = sessionv.getSessionFinishedCheckErrorVector().iterator();
+		stage = setagev.getStageCheck2sessionVector().iterator();
+		while (session.hasNext()){
+			String sesstr = session.next();
+			sessionsz = sesstr.split(separator);
+			while (stage.hasNext()){
+			String stageID = stage.next();	
+//					System.out.println(sessionsz[4]);
+//					System.out.println(stageID);
+			if (sessionsz[4].equals(stageID)){
+//						System.out.println(true);
+//						System.out.println(sesstr);
+				String[] szxx = sesstr.split(separator);
+				String[] szx = szxx[5].split(";");
+				if (szx.length>1){
+					rt += ""+mathRuntime(szxx[6],szxx[7]);
+					sessionInfo = szxx[0]+separator+szxx[1]+separator+szxx[2]+separator+szxx[3]+separator+szxx[4]+separator+szx[0]+separator+szx[1]+separator+szxx[6]+separator+szxx[7]+separator+rt+separator+szxx[8]+separator+"Failed"+separator+stageID;
+					rt = "";
+//					System.out.println("szxx[6]			"+szxx[6]);
+//					System.out.println("szxx[7]			"+szxx[7]);
+//					System.out.println("错误1："+sessionInfo);
+				}else{
+					rt += ""+mathRuntime(szxx[6],szxx[7]);
+					sessionInfo = szxx[0]+separator+szxx[1]+separator+szxx[2]+separator+szxx[3]+separator+szxx[4]+separator+szx[0]+separator+0+separator+szxx[6]+separator+szxx[7]+separator+rt+separator+szxx[8]+separator+"Failed"+separator+stageID;
+					rt = "";
+//					System.out.println("szxx[6]			"+szxx[6]);
+//					System.out.println("szxx[7]			"+szxx[7]);
+//					System.out.println("错误2："+sessionInfo);
+				}
+				sessionv.setSessionFinishedVectorByKey(sessionInfo);
+				rmCheck = true;
+				stage.remove();
+			}
+			}
+			if (rmCheck){
+				session.remove();
+				rmCheck=false;
+			}
+			stage = setagev.getStageCheck2sessionVector().iterator();
+		}
+		session = sessionv.getSessionrunVector().iterator();
+		stage = setagev.getStageCheck2sessionVector().iterator();
+		while (session.hasNext()){
+			System.out.println(session.next());
+		}
+		while (stage.hasNext()){
+			System.out.println(stage.next());
+		}
 		session = sessionv.getSessionFinishedCheckErrorVector().iterator();
 		stage = setagev.getStagecheckErrorVectorVector().iterator();
 		task = taskv.getTaskFinishedCheckErrorVector().iterator();
@@ -208,9 +276,17 @@ public class metaRows4Row {
 			String[] szxx = sessionInfo.split(separator);
 			String[] szx = szxx[5].split(";");
 			if (szx.length>1){
-				sessionInfo = szxx[0]+separator+szxx[1]+separator+szxx[2]+separator+szxx[3]+separator+szxx[4]+separator+szx[0]+separator+szx[1]+separator+szxx[6]+separator+szxx[7]+separator+szxx[8]+separator+"Succeeded"+separator+" ";
+				rt += ""+mathRuntime(szxx[6],szxx[7]);
+				sessionInfo = szxx[0]+separator+szxx[1]+separator+szxx[2]+separator+szxx[3]+separator+szxx[4]+separator+szx[0]+separator+szx[1]+separator+szxx[6]+separator+szxx[7]+separator+rt+separator+szxx[8]+separator+"Succeeded"+separator+" ";
+				rt = "";
+//				System.out.println("szxx[6]			"+szxx[6]);
+//				System.out.println("szxx[7]			"+szxx[7]);
 			}else{
-				sessionInfo = szxx[0]+separator+szxx[1]+separator+szxx[2]+separator+szxx[3]+separator+szxx[4]+separator+szx[0]+separator+0+separator+szxx[6]+separator+szxx[7]+separator+szxx[8]+separator+"Succeeded"+separator+" ";
+				rt += ""+mathRuntime(szxx[6],szxx[7]);
+				sessionInfo = szxx[0]+separator+szxx[1]+separator+szxx[2]+separator+szxx[3]+separator+szxx[4]+separator+szx[0]+separator+0+separator+szxx[6]+separator+szxx[7]+separator+rt+separator+szxx[8]+separator+"Succeeded"+separator+" ";
+				rt = "";
+//				System.out.println("szxx[6]			"+szxx[6]);
+//				System.out.println("szxx[7]			"+szxx[7]);
 			}
 			sessionv.setSessionFinishedVectorByKey(sessionInfo);
 			session.remove();
@@ -220,6 +296,11 @@ public class metaRows4Row {
 			taskInfo +=separator+"Succeeded"+separator+" ";
 			taskv.setTaskFinishedVectorByKey(taskInfo);
 			task.remove();
+		}
+//		System.out.println("看错误");
+		error = errorv.getEreror4OneErrorTempVector().iterator();
+		while (error.hasNext()){
+			System.out.println(error.next());
 		}
 	}
 	
@@ -240,7 +321,7 @@ public class metaRows4Row {
 //			se[4] FinalStageID	3080830
 //			se[5] StageIDS		3080830
 			String se = session.next();
-//			System.out.println(se);
+//			System.out.println("se			"+se);
 			String[] sex = se.split(separator);
 			String[] xg = sex[5].split(";");
 			if (sex[2].equals(JobID)){
@@ -279,7 +360,7 @@ public class metaRows4Row {
 							+sex[4]+separator
 							+sttemp;
 					setv.setSessionrunVectorByKey(tottemp);
-					stagev.RemoveTotalTaskVectorByKey(JobID+","+StageID+","+TotalTasks);
+//					stagev.RemoveTotalTaskVectorByKey(JobID+","+StageID+","+TotalTasks);
 					break;
 				}else{
 					System.out.println(se);

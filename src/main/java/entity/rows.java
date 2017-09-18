@@ -3,6 +3,21 @@ package entity;
 public class rows {
 	private int newnewfilesize;
 	private int oldnewfilesize;
+	private long oldStartTime;
+	private String temp;
+	
+	public String getTemp() {
+		return temp;
+	}
+	public void setTemp(String temp) {
+		this.temp = temp;
+	}
+	public long getOldStartTime() {
+		return oldStartTime;
+	}
+	public void setOldStartTime(long oldStartTime) {
+		this.oldStartTime = oldStartTime;
+	}
 	private boolean checkNewFile =  false;
 	
 	public boolean isCheckNewFile() {
@@ -22,11 +37,6 @@ public class rows {
 	}
 	public void setOldnewfilesize(int oldnewfilesize) {
 		this.oldnewfilesize = oldnewfilesize;
-	}
-	@Override
-	public String toString() {
-		return "rows [newnewfilesize=" + newnewfilesize + ", oldnewfilesize=" + oldnewfilesize + ", checkNewFile="
-				+ checkNewFile + "]";
 	}
 	
 }

@@ -49,21 +49,23 @@ public class FindInceptorLog {
 	public static ErrorVector errorVector;
 	static int temp;
 	public static rows row;
-	
+	static String separator = ":this is separator:";
 	private static metaRows4Row mr = new metaRows4Row();
 	public FindInceptorLog(){
 	}
 	
 	public FindInceptorLog(SessionVector sessionVector,StageVector stageVector,TaskVector taskVector,ErrorVector errorVector,rows row){
-		this.sessionVector=sessionVector;
-		this.stageVector=stageVector;
-		this.taskVector=taskVector;
-		this.errorVector=errorVector;
-		this.row=row;
+		this.sessionVector = sessionVector;
+		this.stageVector = stageVector;
+		this.taskVector = taskVector;
+		this.errorVector = errorVector;
+		this.row = row;
 	}
 	public static void main() {
 		FilterByKey filterByKey = new FilterByKey(sessionVector,stageVector,taskVector,errorVector);
-		Long starttime = System.currentTimeMillis();		
+		Long starttime = System.currentTimeMillis();
+		Long oldStartTime =  row.getOldStartTime();
+		System.out.println("第一次check oldStarttime:"+row.getOldStartTime());
 		do{
 			try{
 			GetLogFile glog =  new GetLogFile(row);
@@ -279,14 +281,40 @@ public class FindInceptorLog {
 		row.setOldnewfilesize(row.getNewnewfilesize());
 		Long endtime1 = System.currentTimeMillis();
 		System.out.println("解析开始时间："+endtime+"    解析结束时间："+endtime1+"    解析耗费："+(endtime1-endtime)+"毫秒  /  "+((endtime1-endtime)/1000L)+"秒");
-		System.out.println("任务结束, 共计耗费："+(endtime1-starttime)+"毫秒  /  "+((endtime1-starttime)/1000L)+"秒");
-//		System.out.println("看Ereror4OneErrorTempVector");
-		Vector<String> SSx =  errorVector.getEreror4OneErrorTempVector();
-		for(String a:SSx){
-			System.out.println(a);
+		System.out.println("清理缓存");
+		System.out.println("清SessionCreateTempVector");
+		Iterator<String> SessionCreateTemp =  sessionVector.getSessionCreateTempVector().iterator();
+		while (SessionCreateTemp.hasNext()){
+			String temp = SessionCreateTemp.next();
+			if (p.compile("(insert into)").matcher(temp).find()){
+				SessionCreateTemp.remove();
+			}
+		}
+		System.out.println("清SessionrunningTimeVector");
+		SessionCreateTemp =  sessionVector.getSessionrunningTimeVector().iterator();
+		while (SessionCreateTemp.hasNext()){
+			String temp = SessionCreateTemp.next();
+			if (Long.parseLong((temp.split(separator)[0]))<oldStartTime){
+				SessionCreateTemp.remove();
+			}
+		}
+		System.out.println("清StagecheckErrorVector");
+		Iterator<String> stageTemp  =  stageVector.getStagecheckErrorVectorVector().iterator();
+		while(stageTemp.hasNext()){
+			String temp =  stageTemp.next();
+			if (p.compile("(org\\.apache\\.spark\\.scheduler\\.StageInfo\\@)").matcher(temp).find()){
+				stageTemp.remove();
+			}
 		}
 		
 		
+		
+		System.out.println("任务结束, 共计耗费："+(endtime1-starttime)+"毫秒  /  "+((endtime1-starttime)/1000L)+"秒");		
+		System.out.println("看Ereror4OneErrorTempVector");
+		Vector<String> SSx =  errorVector.getEreror4OneErrorTempVector();
+		for(String a:SSx){
+			System.out.println(a);
+		}		
 		System.out.println("看SessionVector");
 		Vector<String> SS1 =  sessionVector.getSessionVector();
 		for(String a:SS1){
@@ -315,67 +343,93 @@ public class FindInceptorLog {
 		Vector<String> SS6 =  sessionVector.getSessionrunVector();
 		for(String a:SS6){
 			System.out.println(a);
+		}System.out.println("看SessionFinishedCheckErrorVector");
+		Vector<String> SS7 =  sessionVector.getSessionFinishedCheckErrorVector();
+		for(String a:SS7){
+			System.out.println(a);
 		}
-		
-		//stage  有残留
-//		System.out.println("看TaskDetailTempVector");
-//		Vector<String> SS1 =  stageVector.getTaskDetailTempVector();
-//		for(String a:SS1){
-//			System.out.println(a);
-//		}
-//		System.out.println("看RelTaskAllVector");
-//		Vector<String> SS12 =  stageVector.getRelTaskAllVector();
-//		for(String a:SS1){
-//			System.out.println(a);
-//		}
-//		System.out.println("看RelTask2OneTaskVector");
-//		Vector<String> SS3 =  stageVector.getRelTask2OneTaskVector();
-//		for(String a:SS1){
-//			System.out.println(a);
-//		}
-//		System.out.println("看RelTaskTaskInfoTempVector");
-//		Vector<String> SS4 =  stageVector.getRelTaskTaskInfoTempVector();
-//		for(String a:SS1){
-//			System.out.println(a);
-//		}
-//		System.out.println("看RelTaskStageInfoTempVector");
-//		Vector<String> SS5 =  stageVector.getRelTaskStageInfoTempVector();
-//		for(String a:SS1){
-//			System.out.println(a);
-//		}
-		
+		//stage  
+		System.out.println("看TaskDetailTempVector");
+		Vector<String> St1 =  stageVector.getTaskDetailTempVector();
+		for(String a:St1){
+			System.out.println(a);
+		}
+		System.out.println("看RelTaskAllVector");
+		Vector<String> St12 =  stageVector.getRelTaskAllVector();
+		for(String a:St12){
+			System.out.println(a);
+		}
+		System.out.println("看RelTask2OneTaskVector");
+		Vector<String> St3 =  stageVector.getRelTask2OneTaskVector();
+		for(String a:St3){
+			System.out.println(a);
+		}
+		System.out.println("看RelTaskTaskInfoTempVector");
+		Vector<String> St4 =  stageVector.getRelTaskTaskInfoTempVector();
+		for(String a:St4){
+			System.out.println(a);
+		}
+		System.out.println("看RelTaskStageInfoTempVector");
+		Vector<String> St5 =  stageVector.getRelTaskStageInfoTempVector();
+		for(String a:St5){
+			System.out.println(a);
+		}
+		System.out.println("看StagecheckErrorVector");
+		Vector<String> St6 =  stageVector.getStagecheckErrorVectorVector();
+		for(String a:St6){
+			System.out.println(a);
+		}
+		System.out.println("看TotalTaskVector");
+		Vector<String> St7 =  stageVector.getTotalTaskVector();
+		for(String a:St7){
+			System.out.println(a);
+		}
+		System.out.println("看StageCheck2sessionVector");
+		Vector<String> St8 =  stageVector.getStageCheck2sessionVector();
+		for(String a:St8){
+			System.out.println(a);
+		}
 		//Task
-//		System.out.println("看TaskVector");
-//		Vector<String> SS1 =  taskVector.getTaskVector();
-//		for(String a:SS1){
-//			System.out.println(a);
-//		}
-//		System.out.println("看TaskFinishedVector");
-//		Vector<String> SS2 =  taskVector.getTaskFinishedVector();
-//		for(String a:SS2){
-//			System.out.println(a);
-//		}
-//		System.out.println("看TaskInfoTempVector");
-//		Vector<String> SS3 =  taskVector.getTaskInfoTempVector();
-//		for(String a:SS3){
-//			System.out.println(a);
-//		}
-//		System.out.println("看TaskStartTempVector");
-//		Vector<String> SS4 =  taskVector.getTaskStartTempVector();
-//		for(String a:SS4){
-//			System.out.println(a);
-//		}
-//		System.out.println("看TaskEndTimeVector");
-//		Vector<String> SS5 =  taskVector.getTaskEndTimeVector();
-//		for(String a:SS5){
-//			System.out.println(a);
-//		}
-//		System.out.println("看TaskfinishedCheckTempSet");
-//		Vector<String> SS6 =  taskVector.getTaskfinishedCheckTempSet();
-//		for(String a:SS6){
-//			System.out.println(a);
-//		}
 		
+		row.setOldStartTime(starttime);
+		System.out.println("第二次check oldStarttime:"+row.getOldnewfilesize());
+		
+		
+		System.out.println("看TaskVector");
+		Vector<String> ts1 =  taskVector.getTaskVector();
+		for(String a:ts1){
+			System.out.println(a);
+		}
+		System.out.println("看TaskFinishedVector");
+		Vector<String> ts2 =  taskVector.getTaskFinishedVector();
+		for(String a:ts1){
+			System.out.println(a);
+		}
+		System.out.println("看TaskInfoTempVector");
+		Vector<String> ts3 =  taskVector.getTaskInfoTempVector();
+		for(String a:ts3){
+			System.out.println(a);
+		}
+		System.out.println("看TaskStartTempVector");
+		Vector<String> ts4 =  taskVector.getTaskStartTempVector();
+		for(String a:ts4){
+			System.out.println(a);
+		}
+		System.out.println("看TaskEndTimeVector");
+		Vector<String> ts5 =  taskVector.getTaskEndTimeVector();
+		for(String a:ts5){
+			System.out.println(a);
+		}
+		System.out.println("看TaskfinishedCheckTempSet");
+		Vector<String> ts6 =  taskVector.getTaskfinishedCheckTempSet();
+		for(String a:ts6){
+			System.out.println(a);
+		}
+		System.out.println("看TaskFinishedCheckErrorVector");
+		Vector<String> ts7 =  taskVector.getTaskFinishedCheckErrorVector();
+		for(String a:ts7){
+			System.out.println(a);
+		}
 		
 	}
 }
